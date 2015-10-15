@@ -1,0 +1,48 @@
+local module = {}
+
+module.SSID = {}
+module.SSID["network_name"] = "password"
+
+module.LEDS_PIN = 3 -- pin D2
+module.PIXELS = 8 -- number of pixels
+module.SEGMENT_PIN_SDA = 1 -- I2C
+module.SEGMENT_PIN_SCL = 2 -- I2C
+
+-- Pin used to sense current
+module.ADC_PIN = 0
+-- Pin used to sense temperature
+module.TEMP_PIN = 4
+
+-- Endpoint
+module.HOST = "broker.example.com"
+module.PORT = 1883
+module.USER = "user"
+module.PASSWORD = "password"
+module.ENDPOINT = "home/energy"
+module.SENSOR_ID = "main"
+
+module.SAMPLE_DELAY = 1000 -- in milliseconds
+module.MAX_CURRENT = 30 -- A / EDF 6kW max
+
+module.VOLTAGE = 230.0 -- 230 V
+module.NB_TURNS = 2000 -- 2000 turns, ratio 1:2000
+module.I_CAL = 8.51 -- Calibration I
+module.I_OFFSET = 0.02
+
+ -- WHERE calibration_value = ( i(measured = max*sqrt(2) / i(sensor = measured/2000) ) / R(burden)
+
+    local peak_current_primary = module.MAX_CURRENT * math.sqrt(2) -- in A
+
+    -- So in the secondary coil :
+    local peak_current_secondary = peak_current_primary / module.NB_TURNS -- in A
+
+    -- NodeMCU running at 3.3V (?), so :
+    local SUPPLYVOLTAGE = adc.readvdd33() / 1000
+    local burden_resistor_value = ((SUPPLYVOLTAGE/1000.0) / 2) / peak_current_secondary -- in Ohm
+    
+    print(" Peak Current (primary) [A]: " .. peak_current_primary)
+    print(" Peak Current (secondary) [A]: " .. peak_current_secondary)
+    print(" Internal Supply Voltage [V]: " .. SUPPLYVOLTAGE/1000.0)
+    print(" Burden Resistor [Ohm]: " .. burden_resistor_value) -- 235,70 Ohm ?
+
+return module
