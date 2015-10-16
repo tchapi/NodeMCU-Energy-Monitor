@@ -5,8 +5,11 @@ module.SSID["network_name"] = "password"
 
 module.LEDS_PIN = 3 -- pin D2
 module.PIXELS = 8 -- number of pixels
-module.SEGMENT_PIN_SDA = 1 -- I2C
-module.SEGMENT_PIN_SCL = 2 -- I2C
+module.SEGMENT_PIN_SDA = 7 -- I2C / D7 / GPIO13
+module.SEGMENT_PIN_SCL = 8 -- I2C / D8 / GPIO15
+module.SEGMENT_ADDR = 0x70
+module.SEGMENT_WRITE_REG = 0x00
+
 
 -- Pin used to sense current
 module.ADC_PIN = 0

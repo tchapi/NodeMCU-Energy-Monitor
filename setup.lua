@@ -11,6 +11,7 @@ local function wifi_wait_ip()
     print("IP is "..wifi.sta.getip())
     print("====================================")
 
+    segment.start()
     app.start()
   end
 end
