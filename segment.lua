@@ -9,6 +9,14 @@ function module.print(float)
   send_displayBuffer(SEGMENT_ADDR, SEGMENT_WRITE_REG)
 end
 
+local function send_singleValue(addr, reg, value)
+  i2c.start(0)
+  i2c.address(0, addr , i2c.TRANSMITTER)
+  i2c.write(0,reg)
+  i2c.write(0,value)
+  i2c.stop(0)
+end
+
 local function send_displayBuffer(addr, reg, value)
   i2c.start(0)
   i2c.address(0, addr , i2c.TRANSMITTER)
@@ -101,6 +109,15 @@ end
 function module.start()
   -- i2c init for 7-segment
   i2c.setup(0,config.SEGMENT_PIN_SDA,config.SEGMENT_PIN_SCL,i2c.SLOW)
+
+  -- Turn the oscillator on
+  send_singleValue(SEGMENT_ADDR, bit.bor(0x20, 0x01), 0x00)
+
+  -- Turn blink off
+  send_singleValue(SEGMENT_ADDR, bit.bor(0x80,0x01, bit.lshift(0x00,1)), 0x00)
+
+  -- Set maximum brightness
+  send_singleValue(SEGMENT_ADDR, bit.bor(0xE0, 15), 0x00)
 end
 
 return module

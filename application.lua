@@ -166,13 +166,10 @@ local function sampling_start()
 end
 
 function module.start()
-
     -- init Segment & leds
     segment.print(12.34)
     leds(0) 
-
     mqtt_start()
-
 end
 
 return module
