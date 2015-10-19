@@ -1,0 +1,13 @@
+{
+  "PRIVATE_KEY" : "mYpRiVaTeKeY",
+  "LOG_FILE" : "/var/log/data/data.log",
+  "PATH" : "/home/energy",
+  "mqtt": {
+    "host": "broker.example.com",
+    "port": 1883,
+    "user": "user",
+    "password": "password",
+    "data_endpoint": "home/energy",
+    "control_endpoint": "home/sensor"
+  },
+}
