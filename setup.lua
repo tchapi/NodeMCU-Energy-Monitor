@@ -34,8 +34,6 @@ local function wifi_start(list_aps)
 end
 
 function module.start()
-  ws2812.writergb(config.LED_PIN_A, string.char(0,0,255):rep(config.PIXELS))
-  ws2812.writergb(config.LED_PIN_B, string.char(0,0,255):rep(config.PIXELS))
   print("Configuring Wifi ...")
   wifi.setmode(wifi.STATION);
   wifi.sta.getap(wifi_start)

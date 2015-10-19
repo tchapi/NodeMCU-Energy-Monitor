@@ -9,6 +9,15 @@ Leds -> pin GPIO simple
 Current sensor -> ADC 0 on ESP8266
 Temperature -> one-wire, pin 9, DS18B20, https://www.sparkfun.com/products/245
 
+### To upload a new firmware :
+
+// For Rev 1 boards (larger)
+python esptool.py --port /dev/tty.wchusbserial1420 write_flash 0x00000 ../firmwares/nodemcu_float_0.9.6-dev_20150625.bin
+
+// For Rev2 Boards (AMICA)
+python esptool.py --baud 115200 --port /dev/tty.SLAB_USBtoUART write_flash -fm dio -fs 32m 0x00000 ../firmwares/nodemcu_float_0.9.6-dev_20150625.bin
+
+
 ### Installation
 
 Please follow the steps at http://www.foobarflies.io/a-simple-connected-object-with-nodemcu-and-mqtt/, you'll be up and running in a few minutes.

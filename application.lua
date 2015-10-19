@@ -130,7 +130,7 @@ end
 
 -- Sends data to the broker
 local function send_data(power, temperature)
-    m:publish(config.ENDPOINT, "id=" .. config.SENSOR_ID .. "&w=" .. power .. "&t=" .. temperature,0,0)
+    m:publish(config.ENDPOINT, "id=" .. config.SENSOR_ID .. "&w=" .. power .. "&t=" .. temperature, 2, 0)
 end
 
 -- Displays data on the 7-seg and the leds
@@ -155,6 +155,11 @@ local function mqtt_start()
     
     m:connect(config.HOST, config.PORT, 0, 1, function(con) 
         print("Connected to broker")
+
+        m:subscribe(config.SELF_ENDPOINT, 2,function(conn)
+            print("Successfully subscribed to data endpoint")
+        end)
+
         sampling_start()
     end) 
 
