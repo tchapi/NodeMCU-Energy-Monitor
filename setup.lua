@@ -6,12 +6,13 @@ local function wifi_wait_ip()
   else
     tmr.stop(1)
     print("\n====================================")
-    print("ESP8266 mode is: " .. wifi.getmode())
     print("MAC address is: " .. wifi.ap.getmac())
     print("IP is "..wifi.sta.getip())
     print("====================================")
 
-    segment.start()
+    pixels.setSingle(pixels.green)
+    segment.clear()
+    segment.setBrightness(10)
     app.start()
   end
 end
@@ -20,7 +21,7 @@ local function wifi_start(list_aps)
     if list_aps then
         for key,value in pairs(list_aps) do
             if config.SSID and config.SSID[key] then
-                wifi.setmode(wifi.STATION);
+                wifi.setmode(wifi.STATION)
                 wifi.sta.config(key,config.SSID[key])
                 wifi.sta.connect()
                 print("Connecting to " .. key .. " ...")
@@ -35,7 +36,8 @@ end
 
 function module.start()
   print("Configuring Wifi ...")
-  wifi.setmode(wifi.STATION);
+  wifi.setmode(wifi.STATION)
+  pixels.setSingle(pixels.yellow)
   wifi.sta.getap(wifi_start)
 end
 

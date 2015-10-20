@@ -112,6 +112,24 @@ function module.setBrightness(value)
   sendSingleValue(config.SEGMENT_ADDR, bit.bor(0xE0, math.max(1,math.min(15,value))), 0x00)
 end
 
+function module.clear()
+  for i=1,numericDigits + 1 do
+    displaybuffer[i] = 0 -- fill with zeros
+  end
+  sendDisplayBuffer(config.SEGMENT_ADDR, config.SEGMENT_WRITE_REG)
+end
+
+function module.dash()
+  for i=1,numericDigits + 1 do
+    if (i ~= 3) then
+      displaybuffer[i] = 0x40 -- fill with dashes
+    else
+      displaybuffer[i] = 0
+    end
+  end
+  sendDisplayBuffer(config.SEGMENT_ADDR, config.SEGMENT_WRITE_REG)
+end
+
 function module.start()
   -- i2c init for 7-segment
   i2c.setup(0,config.SEGMENT_PIN_SDA,config.SEGMENT_PIN_SCL,i2c.SLOW)
@@ -122,8 +140,10 @@ function module.start()
   -- Turn blink off
   sendSingleValue(config.SEGMENT_ADDR, bit.bor(0x80,0x01, bit.lshift(0x00,1)), 0x00)
 
-  -- Set maximum brightness
+  -- Set brightness
   sendSingleValue(config.SEGMENT_ADDR, bit.bor(0xE0, 5), 0x00)
+  
+  module.dash()
 end
 
 return module
