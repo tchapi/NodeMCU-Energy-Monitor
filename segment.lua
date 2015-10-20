@@ -1,10 +1,10 @@
 local module = {}
-    -- https://github.com/adafruit/Adafruit-Raspberry-Pi-Python-Code/tree/master/Adafruit_LEDBackpack
-    -- TODO
+
 local numbertable = { 0x3F, 0x06, 0x5B, 0x4F, 0x66, 0x6D, 0x7D, 0x07, 0x7F, 0x6F, 0x77, 0x7C, 0x39, 0x5E, 0x79, 0x71}
 local displaybuffer = {}
+local numericDigits = 4 -- available digits on display
 
-local function send_singleValue(addr, reg, value)
+local function sendSingleValue(addr, reg, value)
   i2c.start(0)
   i2c.address(0, addr , i2c.TRANSMITTER)
   i2c.write(0,reg)
@@ -12,36 +12,31 @@ local function send_singleValue(addr, reg, value)
   i2c.stop(0)
 end
 
-local function send_displayBuffer(addr, reg)
+local function sendDisplayBuffer(addr, reg)
   i2c.start(0)
   i2c.address(0, addr , i2c.TRANSMITTER)
   i2c.write(0,reg)
-  for i=1,8 do
+  for i=1,numericDigits + 1 do
     i2c.write(0, bit.band(displaybuffer[i],0xFF))    
     i2c.write(0, bit.rshift(displaybuffer[i],8))
   end
-  -- i2c.write(0,value)
   i2c.stop(0)
 end
 
 local function writeDigitRaw(d, bitmask)
-  if (d > 5) then
+  if (d > numericDigits + 1) then
     return
   end
   displaybuffer[d] = bitmask
 end
 
 local function writeDigitNum(d, num, dot)
-  if (d > 5) then
-    return
-  end
-  --print(d .. ": " .. numbertable[num+1] .. " - dot : " .. dot)
   writeDigitRaw(d, bit.bor(numbertable[num+1], bit.lshift(dot, 7)))
 end
 
 local function printFloat(n, fracDigits, base) 
 
-  local numericDigits = 4   -- available digits on display
+  fracDigits = math.max(0,math.min(fracDigits, numericDigits - 1))
   
   -- calculate the factor required to shift all fractional digits
   -- into the integer part of the number
@@ -67,16 +62,16 @@ local function printFloat(n, fracDigits, base)
     toIntFactor = toIntFactor / base
     displayNumber = math.floor(n * toIntFactor + 0.5)
   end
-    -- print(displayNumber)
+  -- print(displayNumber)
   -- did toIntFactor shift the decimal off the display?
   if (toIntFactor < 1) then
-    print("error; number too big")
+    print("error on 7-segment; number too big")
   else
     -- otherwise, display the number
-    local displayPos = 5
+    local displayPos = numericDigits + 1
 
-    for i=1,8 do
-       displaybuffer[i] = 0x00
+    for i=1,displayPos do
+       displaybuffer[i] = 0 -- fill with zeros
     end
         
     if (displayNumber > 0) then -- if displayNumber is not 0
@@ -84,30 +79,37 @@ local function printFloat(n, fracDigits, base)
           --print("---")
           --print(i)
         if (i == 3) then
-          -- jump on middle colon
+          -- jump the middle colon
           writeDigitRaw(i, 0x00)
+          fracDigits = fracDigits + 1
           --print("no semicolon")
         else 
           --print("number " .. displayNumber % base)
-          local displayDecimal = (fracDigits ~= 0 and i == fracDigits) and 1 or 0
+          local displayDecimal = (fracDigits ~= 0 and i == (displayPos - fracDigits)) and 1 or 0
             --print(displayNumber)
             --print(displayDecimal)
-          writeDigitNum(i, displayNumber % base, displayDecimal)
+            if (displayNumber % base ~= 0 or i >= (displayPos - fracDigits)) then
+                writeDigitNum(i, displayNumber % base, displayDecimal)
+            end
           displayNumber = math.floor(displayNumber / base)
         end
       end
     else
-      writeDigitNum(displayPos, 0, false)
+      writeDigitNum(displayPos, 0, 0)
     end
 
   end
 
 end
 
-function module.print(float)
-  printFloat(float, 2, 10)
+function module.print(float, precision)
+  printFloat(float, precision, 10)
   --for k,v in pairs(displaybuffer) do print(k,v) end
-  send_displayBuffer(config.SEGMENT_ADDR, config.SEGMENT_WRITE_REG)
+  sendDisplayBuffer(config.SEGMENT_ADDR, config.SEGMENT_WRITE_REG)
+end
+
+function module.setBrightness(value)
+  sendSingleValue(config.SEGMENT_ADDR, bit.bor(0xE0, math.max(1,math.min(15,value))), 0x00)
 end
 
 function module.start()
@@ -115,13 +117,13 @@ function module.start()
   i2c.setup(0,config.SEGMENT_PIN_SDA,config.SEGMENT_PIN_SCL,i2c.SLOW)
 
   -- Turn the oscillator on
-  send_singleValue(config.SEGMENT_ADDR, bit.bor(0x20, 0x01), 0x00)
+  sendSingleValue(config.SEGMENT_ADDR, bit.bor(0x20, 0x01), 0x00)
 
   -- Turn blink off
-  send_singleValue(config.SEGMENT_ADDR, bit.bor(0x80,0x01, bit.lshift(0x00,1)), 0x00)
+  sendSingleValue(config.SEGMENT_ADDR, bit.bor(0x80,0x01, bit.lshift(0x00,1)), 0x00)
 
   -- Set maximum brightness
-  send_singleValue(config.SEGMENT_ADDR, bit.bor(0xE0, 15), 0x00)
+  sendSingleValue(config.SEGMENT_ADDR, bit.bor(0xE0, 5), 0x00)
 end
 
 return module
