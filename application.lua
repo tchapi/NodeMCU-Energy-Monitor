@@ -40,12 +40,12 @@ end
 
 local function calcTemperature()
     -- returns the temperature from one DS18S20 in DEG Celsius
-    ow.setup(TEMP_PIN)
+    ow.setup(config.TEMP_PIN)
     count = 0
     repeat
       count = count + 1
-      addr = ow.reset_search(TEMP_PIN)
-      addr = ow.search(TEMP_PIN)
+      addr = ow.reset_search(config.TEMP_PIN)
+      addr = ow.search(config.TEMP_PIN)
       tmr.wdclr()
     until((addr ~= nil) or (count > 100))
 
@@ -58,28 +58,27 @@ local function calcTemperature()
         if ((addr:byte(1) == 0x10) or (addr:byte(1) == 0x28)) then
           -- print("Device is a DS18S20 family device.")
             repeat
-              ow.reset(TEMP_PIN)
-              ow.select(TEMP_PIN, addr)
-              ow.write(TEMP_PIN, 0x44, 1)
+              ow.reset(config.TEMP_PIN)
+              ow.select(config.TEMP_PIN, addr)
+              ow.write(config.TEMP_PIN, 0x44, 1)
               tmr.delay(1000000) -- 100ms
-              present = ow.reset(TEMP_PIN)
-              ow.select(TEMP_PIN, addr)
-              ow.write(TEMP_PIN,0xBE,1)
-              -- print("P="..present)  
+              present = ow.reset(config.TEMP_PIN)
+              ow.select(config.TEMP_PIN, addr)
+              ow.write(config.TEMP_PIN,0xBE,1)
+              print("P="..present)  
               data = nil
-              data = string.char(ow.read(TEMP_PIN))
+              data = string.char(ow.read(config.TEMP_PIN))
               for i = 1, 8 do
-                data = data .. string.char(ow.read(TEMP_PIN))
+                data = data .. string.char(ow.read(config.TEMP_PIN))
               end
-              -- print(data:byte(1,9))
+              print(data:byte(1,9))
               crc = ow.crc8(string.sub(data,1,8))
-              -- print("CRC="..crc)
+              print("CRC="..crc)
               if (crc == data:byte(9)) then
                  t = (data:byte(1) + data:byte(2) * 256) * 625
                  t1 = t / 10000
-                 t2 = t % 10000
-                 print("Temperature="..t1.."."..t2.."°C")
-                return t / 10000 
+                 print("Temperature="..t1.." deg C")
+                return t1 
               end                   
               tmr.wdclr()
             until false
@@ -119,7 +118,7 @@ end
 
 local function sample()
     pixels.set(pixels.yellow .. pixels.OFF)
-    local temperature = 25.2 --calcTemperature()
+    local temperature = calcTemperature()
     local Irms = calcIrms(1480) -- Calculate Irms only
     local power = math.floor(Irms * config.VOLTAGE)
     

@@ -1,17 +1,25 @@
-print("Delaying startup for 2s...")
-tmr.delay(2000 * 1000)
-
 config = require("config")
+print("1")
+print(node.heap())
 
 pixels = require("pixels")
-pixels.start()
-pixels.setSingle(red)
+  pixels.start()
+  pixels.setSingle(pixels.red)
+print("2")
+print(node.heap())
 
 segment = require("segment")
-segment.start()
+  segment.start()
+print("3")
+print(node.heap())
 
 app = require("application")
-setup = require("setup")
+print("4")
+print(node.heap())
 
-pixels.setSingle(orange)
+setup = require("setup")
+print("5")
+print(node.heap())
+
+pixels.setSingle(pixels.orange)
 setup.start()
