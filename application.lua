@@ -2,6 +2,10 @@ local module = {}
 
 local m = nil
 
+-- Display vars
+local display_on = true
+local temp_on_segment = true
+
 -- We need to declare that global
 local lastSampleI = 0
 local sampleI = 0
@@ -52,7 +56,7 @@ local function calcTemperature()
     if (addr == nil) then
       print("No more addresses.")
     else
-      print(addr:byte(1,8))
+      --print(addr:byte(1,8))
       crc = ow.crc8(string.sub(addr,1,7))
       if (crc == addr:byte(8)) then
         if ((addr:byte(1) == 0x10) or (addr:byte(1) == 0x28)) then
@@ -65,19 +69,19 @@ local function calcTemperature()
               present = ow.reset(config.TEMP_PIN)
               ow.select(config.TEMP_PIN, addr)
               ow.write(config.TEMP_PIN,0xBE,1)
-              print("P="..present)  
+              --print("P="..present)  
               data = nil
               data = string.char(ow.read(config.TEMP_PIN))
               for i = 1, 8 do
                 data = data .. string.char(ow.read(config.TEMP_PIN))
               end
-              print(data:byte(1,9))
+              --print(data:byte(1,9))
               crc = ow.crc8(string.sub(data,1,8))
-              print("CRC="..crc)
+              --print("CRC="..crc)
               if (crc == data:byte(9)) then
                  t = (data:byte(1) + data:byte(2) * 256) * 625
                  t1 = t / 10000
-                 print("Temperature="..t1.." deg C")
+                 --print("Temperature="..t1.." deg C")
                 return t1 
               end                   
               tmr.wdclr()
@@ -113,7 +117,16 @@ end
 -- Displays data on the 7-seg and the leds
 local function display_data(power, temperature)
     leds(power)
-    segment.print(temperature,1)
+    if (temp_on_segment == true) then
+      segment.print(temperature,1)
+    else
+      segment.print(power,0)
+    end
+end
+
+local function turn_display_off()
+    leds(0)
+    segment.clear()
 end
 
 local function sample()
@@ -122,7 +135,9 @@ local function sample()
     local Irms = calcIrms(1480) -- Calculate Irms only
     local power = math.floor(Irms * config.VOLTAGE)
     
-    display_data(power, temperature)
+    if (display_on == true) then
+      display_data(power, temperature)
+    end
     send_data(power, temperature)
     -- Will be done by the publish callback
     -- pixels.set(pixels.OFF .. pixels.OFF)
@@ -146,7 +161,18 @@ local function mqtt_start()
       if data ~= nil then
         print(topic .. ": " .. data)
         -- change display somehow to indicate message
-        segment.dash()
+        if data == "dt" then
+          segment.dash()
+          temp_on_segment = true
+        elseif data == "dw" then
+          segment.dash()
+          temp_on_segment = false
+        elseif data == "off" then
+          turn_display_off()
+          display_on = false
+        elseif data == "on" then
+          display_on = true
+        end
       end
       tmr.delay(500*1000) -- just so we can see the light
       pixels.set(pixels.OFF .. pixels.OFF)
