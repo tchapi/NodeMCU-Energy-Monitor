@@ -3,10 +3,6 @@ A simple Lua-based current and temperature monitor
 
 This is the follow-up of https://github.com/tchapi/Arduino-Energy-Monitor
 
-TODO Pins :
-Current sensor -> ADC 0 on ESP8266
-Temperature -> one-wire, pin 9, DS18B20, https://www.sparkfun.com/products/245
-
 ### To upload a new firmware :
 
 // For Rev 1 boards (larger)

@@ -99,17 +99,17 @@ end
 -- 
 local function leds(power)
     local nb_leds = math.ceil(power / (config.MAX_CURRENT * config.VOLTAGE) * 6); -- + 2 leds at the start 
-    local lit = pixels.green .. pixels.OFF .. string.sub(pixels.sequence, 1, nb_leds) .. pixels.OFF:rep(config.PIXELS - 2 - nb_leds)
+    local lit = pixels.green .. pixels.OFF .. string.sub(pixels.sequence, 1, nb_leds*3) .. pixels.OFF:rep(config.PIXELS - 2 - nb_leds)
     pixels.set(lit)
 end
 
 -- Sends data to the broker
 local function send_data(power, temperature)
     pixels.set(pixels.green .. pixels.yellow) -- sample pixel only
-    local s = string.format("id=%s&w=%d&t=%.2f",config.SENSOR_ID, power, temperature) 
+    local s = string.format("id=%s&w=%d&t=%.2f&h=%d",config.SENSOR_ID, power, temperature, node.heap()) 
     m:publish(config.DATA_ENDPOINT, s, 2, 0, function(client)
       pixels.set(pixels.green .. pixels.green) -- sample pixel only
-      tmr.delay(500*1000)
+      tmr.delay(200*1000)
       pixels.set(pixels.OFF .. pixels.OFF)
     end)
 end
@@ -174,7 +174,7 @@ local function mqtt_start()
           display_on = true
         end
       end
-      tmr.delay(500*1000) -- just so we can see the light
+      tmr.delay(200*1000) -- just so we can see the light
       pixels.set(pixels.OFF .. pixels.OFF)
     end)
 

@@ -9,7 +9,7 @@ module.orange = string.char(255, 163, 0)
 module.red = string.char(255, 0, 0)
 module.white = string.char(255, 255, 255)
 module.OFF = string.char(0, 0, 0)
-module.sequence = module.OFF .. module.OFF .. module.blue .. module.turquoise .. module.green .. module.yellow .. module.orange .. module.red
+module.sequence = module.blue .. module.turquoise .. module.green .. module.yellow .. module.orange .. module.red
 
 function module.set(colors)
   ws2812.writergb(config.LEDS_PIN, colors)
