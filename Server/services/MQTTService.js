@@ -17,7 +17,6 @@ MQTTService = function(options, log_service) {
 
   this.client.on('message', (function (topic, message) {
 
-    //console.log("Message received [" + topic + ": " + message + "]")
     this.handle(topic, message)
 
   }).bind(this))
@@ -31,18 +30,14 @@ p.handle = function(topic, message) {
   if (topic == this.data_endpoint){
     message = message.toString('utf-8')
     tokens = message.split("&")
-    //"id=" .. config.SENSOR_ID .. "&w=" .. power .. "&t=" .. temperature
+    //"id=" .. config.SENSOR_ID .. "&w=" .. power .. "&t=" .. temperature .. "&h=" .. heap_size
+    // id=%s&w=%d&t=%.2f&h=%d
     id = tokens[0].substring(3)
     w = tokens[1].substring(2)
     t = tokens[2].substring(2)
-    //console.log("id = " + id + " - w = " + w + " - t = " + t)
-    this.log_service.append({temperature: t, power: w})
+    h = tokens[3].substring(2)
+    this.log_service.append({temperature: t, power: w, heap: h})
   }
-}
-
-p.notify = function(sensor_id, message) {
-  console.log(" -- notify(" + sensor_id + "):: " + message)
-  this.client.publish(this.control_endpoint + '/' + sensor_id, message)
 }
 
 module.exports = MQTTService

@@ -14,9 +14,9 @@ p.append = function(data) {
   // Format log
   /*
     Matching grok configuration :
-    match => { "message" => "(?<timestamp>%{YEAR}/%{MONTHNUM:month}/%{MONTHDAY:day} %{TIME}) %{NUMBER:temperature} %{NUMBER:power}" }
+    match => { "message" => "(?<timestamp>%{YEAR}/%{MONTHNUM:month}/%{MONTHDAY:day} %{TIME}) %{NUMBER:temperature} %{NUMBER:power} %{NUMBER:heap}" }
   */
-  var log_message = date + " " + data.temperature + " " + data.power
+  var log_message = date + " " + data.temperature + " " + data.power + " " + data.heap
 
   fs.appendFile(this.log_file, log_message + "\n", function (err) {
     if (err) {
