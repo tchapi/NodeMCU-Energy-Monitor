@@ -62,7 +62,7 @@ local function printFloat(n, fracDigits, base)
     toIntFactor = toIntFactor / base
     displayNumber = math.floor(n * toIntFactor + 0.5)
   end
-  -- print(displayNumber)
+
   -- did toIntFactor shift the decimal off the display?
   if (toIntFactor < 1) then
     print("error on 7-segment; number too big")
@@ -71,24 +71,27 @@ local function printFloat(n, fracDigits, base)
     local displayPos = numericDigits + 1
 
     for i=1,displayPos do
-       displaybuffer[i] = 0 -- fill with zeros
+       displaybuffer[i] = 0 -- fill with blanks
     end
         
     if (displayNumber > 0) then -- if displayNumber is not 0
+
+      local jump = 0 -- to jump the middle semicolon position
       for i=displayPos,1,-1 do
           --print("---")
           --print(i)
         if (i == 3) then
-          -- jump the middle colon
+          -- jump the middle semicolon
           writeDigitRaw(i, 0x00)
-          fracDigits = fracDigits + 1
+          -- fracDigits = fracDigits + 1
           --print("no semicolon")
-        else 
-          --print("number " .. displayNumber % base)
-          local displayDecimal = (fracDigits ~= 0 and i == (displayPos - fracDigits)) and 1 or 0
+          jump = 1
+        else
+          local displayDecimal = ((fracDigits + jump) ~= 0 and i == (displayPos - (fracDigits + jump))) and 1 or 0
             --print(displayNumber)
             --print(displayDecimal)
-            if (displayNumber % base ~= 0 or i >= (displayPos - fracDigits)) then
+            if (displayNumber % base ~= 0 or base ^ (displayPos - i - jump) < n) then --  or i >= (displayPos - fracDigits)
+                -- print("printing at " .. i)
                 writeDigitNum(i, displayNumber % base, displayDecimal)
             end
           displayNumber = math.floor(displayNumber / base)
@@ -141,7 +144,7 @@ function module.start()
   sendSingleValue(config.SEGMENT_ADDR, bit.bor(0x80,0x01, bit.lshift(0x00,1)), 0x00)
 
   -- Set brightness
-  sendSingleValue(config.SEGMENT_ADDR, bit.bor(0xE0, 5), 0x00)
+  module.setBrightness(1)
   
   module.dash()
 end

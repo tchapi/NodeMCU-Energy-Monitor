@@ -3,7 +3,8 @@ local module = {}
 local m = nil
 
 -- Display vars
-local display_on = true
+local segment_on = true
+local leds_on = true
 local temp_on_segment = true
 
 -- We need to declare that global
@@ -54,7 +55,8 @@ local function calcTemperature()
     until((addr ~= nil) or (count > 100))
 
     if (addr == nil) then
-      print("No more addresses.")
+      print("No more addresses - temperature sensor not connected.")
+      return 0
     else
       --print(addr:byte(1,8))
       crc = ow.crc8(string.sub(addr,1,7))
@@ -98,29 +100,37 @@ end
 
 -- 
 local function leds(power)
-    local nb_leds = math.ceil(power / (config.MAX_CURRENT * config.VOLTAGE) * 6); -- + 2 leds at the start 
+    local nb_leds = math.min(6, math.max(0, math.ceil(power / (config.MAX_CURRENT * config.VOLTAGE) * 6))); -- + 2 leds at the start 
     local lit = pixels.green .. pixels.OFF .. string.sub(pixels.sequence, 1, nb_leds*3) .. pixels.OFF:rep(config.PIXELS - 2 - nb_leds)
-    pixels.set(lit)
+    if (leds_on == true) then
+        pixels.set(lit)
+    end
 end
 
 -- Sends data to the broker
 local function send_data(power, temperature)
-    pixels.set(pixels.green .. pixels.yellow) -- sample pixel only
+    if (leds_on == true) then
+        pixels.set(pixels.green .. pixels.yellow) -- sample pixel only
+    end
     local s = string.format("id=%s&w=%d&t=%.2f&h=%d",config.SENSOR_ID, power, temperature, node.heap()) 
     m:publish(config.DATA_ENDPOINT, s, 2, 0, function(client)
-      pixels.set(pixels.green .. pixels.green) -- sample pixel only
-      tmr.delay(200*1000)
-      pixels.set(pixels.OFF .. pixels.OFF)
+        if (leds_on == true) then
+            pixels.set(pixels.green .. pixels.green) -- sample pixel only
+            tmr.delay(200*1000)
+            pixels.set(pixels.OFF .. pixels.OFF)
+        end
     end)
 end
 
 -- Displays data on the 7-seg and the leds
 local function display_data(power, temperature)
     leds(power)
-    if (temp_on_segment == true) then
-      segment.print(temperature,1)
-    else
-      segment.print(power,0)
+    if (segment_on == true) then
+        if (temp_on_segment == true) then
+          segment.print(temperature,1)
+        else
+          segment.print(power,0)
+        end
     end
 end
 
@@ -130,14 +140,15 @@ local function turn_display_off()
 end
 
 local function sample()
-    pixels.set(pixels.yellow .. pixels.OFF)
+    if (leds_on == true) then
+        pixels.set(pixels.yellow .. pixels.OFF)
+    end
     local temperature = calcTemperature()
     local Irms = calcIrms(1480) -- Calculate Irms only
     local power = math.floor(Irms * config.VOLTAGE)
     
-    if (display_on == true) then
-      display_data(power, temperature)
-    end
+    display_data(power, temperature)
+
     send_data(power, temperature)
     -- Will be done by the publish callback
     -- pixels.set(pixels.OFF .. pixels.OFF)
@@ -157,7 +168,7 @@ local function mqtt_start()
     m = mqtt.Client(config.SENSOR_ID, 120, config.USER, config.PASSWORD)
     
     m:on("message", function(conn, topic, data)
-      pixels.set(pixels.OFF .. pixels.blue)
+      pixels.set(pixels.blue .. pixels.blue)
       if data ~= nil then
         print(topic .. ": " .. data)
         -- change display somehow to indicate message
@@ -169,20 +180,29 @@ local function mqtt_start()
           temp_on_segment = false
         elseif data == "off" then
           turn_display_off()
-          display_on = false
+          segment_on = false
+          leds_on = false
         elseif data == "on" then
-          display_on = true
+          segment_on = true
+          leds_on = true
+        elseif data == "segment_off" then
+          turn_display_off()
+          segment_on = false
+        elseif data == "segment_on" then
+          segment_on = true
+        elseif data == "test" then
+          leds(config.MAX_CURRENT * config.VOLTAGE)
         end
       end
       tmr.delay(200*1000) -- just so we can see the light
       pixels.set(pixels.OFF .. pixels.OFF)
     end)
 
-    pixels.set(pixels.orange:rep(4))
+    pixels.set(pixels.OFF:rep(2) .. pixels.orange:rep(4) .. pixels.OFF:rep(2))
     
     m:connect(config.HOST, config.PORT, 0, function(con) 
         print("Connected to broker")
-        pixels.set(pixels.yellow:rep(6))
+        pixels.set(pixels.OFF .. pixels.yellow:rep(6) .. pixels.OFF)
         m:subscribe(config.CONTROL_ENDPOINT, 2, function(client)
             print("Subscribed to control endpoint with QoS 2")
             pixels.set(pixels.green:rep(8))
