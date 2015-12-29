@@ -18,6 +18,8 @@ D8 = 8
 -- & https://arduining.files.wordpress.com/2015/08/nodemcudevkit_v1-0_io.jpg
 module.LEDS_PIN = D3 -- pin D3
 module.PIXELS = 8 -- number of pixels
+module.BRIGHT = 0.04 -- 0 < x < 1
+module.VISUAL_FACTOR = 0.7 -- 0 < x < 1
 module.SEGMENT_PIN_SDA = D1 -- I2C / D7 / GPIO13
 module.SEGMENT_PIN_SCL = D2 -- I2C / D8 / GPIO15
 module.SEGMENT_ADDR = 0x70

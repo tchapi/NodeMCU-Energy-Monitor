@@ -7,6 +7,9 @@ local segment_on = true
 local leds_on = true
 local temp_on_segment = true
 
+-- To avoid collision
+local sampling_in_progress = false
+
 -- We need to declare that global
 local lastSampleI = 0
 local sampleI = 0
@@ -100,7 +103,7 @@ end
 
 -- 
 local function leds(power)
-    local nb_leds = math.min(6, math.max(0, math.ceil(power / (config.MAX_CURRENT * config.VOLTAGE) * 6))); -- + 2 leds at the start 
+    local nb_leds = math.min(6, math.max(0, math.ceil(power / (config.MAX_CURRENT * config.VOLTAGE * config.VISUAL_FACTOR) * 6))); -- + 2 leds at the start 
     local lit = pixels.green .. pixels.OFF .. string.sub(pixels.sequence, 1, nb_leds*3) .. pixels.OFF:rep(config.PIXELS - 2 - nb_leds)
     if (leds_on == true) then
         pixels.set(lit)
@@ -140,18 +143,23 @@ local function turn_display_off()
 end
 
 local function sample()
-    if (leds_on == true) then
-        pixels.set(pixels.yellow .. pixels.OFF)
-    end
-    local temperature = calcTemperature()
-    local Irms = calcIrms(1480) -- Calculate Irms only
-    local power = math.floor(Irms * config.VOLTAGE)
-    
-    display_data(power, temperature)
 
-    send_data(power, temperature)
-    -- Will be done by the publish callback
-    -- pixels.set(pixels.OFF .. pixels.OFF)
+    if (sampling_in_progress == false) then
+      sampling_in_progress = true
+      if (leds_on == true) then
+          pixels.set(pixels.yellow .. pixels.OFF)
+      end
+      local temperature = calcTemperature()
+      local Irms = calcIrms(1480) -- Calculate Irms only
+      local power = math.floor(Irms * config.VOLTAGE)
+      
+      display_data(power, temperature)
+
+      send_data(power, temperature)
+      -- Will be done by the publish callback
+      -- pixels.set(pixels.OFF .. pixels.OFF)
+      sampling_in_progress = false
+    end
 end
 
 -- Starts the sampling timer
@@ -192,6 +200,8 @@ local function mqtt_start()
           segment_on = true
         elseif data == "test" then
           leds(config.MAX_CURRENT * config.VOLTAGE)
+        elseif data == "force" then
+          sample()
         end
       end
       tmr.delay(200*1000) -- just so we can see the light
