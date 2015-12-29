@@ -93,6 +93,11 @@ public class MQTTClient implements MqttCallback {
 
     public void sendMessageToSensor(String data) {
 
+        if(!isConnected()){
+            System.out.println("Not connected, aborting");
+            return;
+        }
+
         // setup topic
         MqttTopic topic = mClient.getTopic(sharedPref.getString("pref_sensor", ""));
 

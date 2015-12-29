@@ -221,6 +221,16 @@ public class MainActivity extends AppCompatActivity {
                 retry.setVisibility(View.VISIBLE);
                 mTimer.cancel();
                 e.printStackTrace();
+            }  catch (Exception e) {
+                Toast.makeText(this,"Problem connecting. Please check the settings, and retry.", Toast.LENGTH_LONG).show();
+
+                mActive.setText("DISCONNECTED");
+                mActive1.setBackgroundColor(getResources().getColor(R.color.text));
+                mActive2.setBackgroundColor(getResources().getColor(R.color.text));
+                mActive.setTextColor(getResources().getColor(R.color.text));
+                retry.setVisibility(View.VISIBLE);
+                mTimer.cancel();
+                e.printStackTrace();
             }
         }
     }
