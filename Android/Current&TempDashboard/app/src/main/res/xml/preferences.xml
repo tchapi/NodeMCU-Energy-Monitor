@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:title="MQTT">
+        <EditTextPreference
+            android:key="pref_url"
+            android:title="Broker URL"
+            android:summary="Indicate the broker url"
+            android:defaultValue="tcp://broker.example.com" />
+        <EditTextPreference
+            android:key="pref_port"
+            android:title="Broker port"
+            android:summary="Indicate the port used for connecting to MQTT"
+            android:defaultValue="1883" />
+        <EditTextPreference
+            android:key="pref_username"
+            android:summary="The username used for connecting"
+            android:title="Username"
+            android:defaultValue="" />
+        <EditTextPreference
+            android:key="pref_password"
+            android:summary="The password for this username"
+            android:title="Password"
+            android:defaultValue="" />
+        <EditTextPreference
+            android:key="pref_client"
+            android:summary="The client name"
+            android:title="Client name"
+            android:defaultValue="android-client" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:title="Endpoints">
+        <EditTextPreference
+            android:key="pref_data"
+            android:summary="The data (incoming) endpoint"
+            android:title="Data endpoint"
+            android:defaultValue="home/energy" />
+        <EditTextPreference
+            android:key="pref_sensor"
+            android:summary="The sensor (outcoming) endpoint"
+            android:title="Sensor endpoint"
+            android:defaultValue="home/sensor/main" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

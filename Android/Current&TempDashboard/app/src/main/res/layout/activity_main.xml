@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="me.tchap.ct_dashboard.MainActivity"
+    android:orientation="vertical"
+    android:background="@color/background">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:textAlignment="center"
+        android:layout_height="wrap_content"
+        android:text="HOME"
+        android:fontFamily="sans-serif-thin"
+        android:textSize="28sp"
+        android:textColor="@color/white"
+        android:layout_marginBottom="20dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:gravity="center_horizontal">
+
+        <View
+            android:layout_width="100dp"
+            android:layout_height="1dp"
+            android:background="@color/text"
+            android:id="@+id/active1"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="20dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:textAlignment="center"
+            android:layout_height="wrap_content"
+            android:id="@+id/active"
+            android:text="ACQUIRING DATA ..."
+            android:fontFamily="sans-serif-thin"
+            android:textSize="20sp"
+            android:textColor="@color/text" />
+
+        <View
+            android:layout_width="100dp"
+            android:layout_height="1dp"
+            android:background="@color/text"
+            android:id="@+id/active2"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="20dp"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="20dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/temperature"
+            android:text="00.0"
+            android:textSize="42sp"
+            android:textColor="@color/white"
+            android:fontFamily="sans-serif-thin" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/temperature_label"
+            android:text="°C"
+            android:textSize="28sp"
+            android:textColor="@color/text"
+            android:layout_marginLeft="10dp"
+            android:fontFamily="sans-serif-thin" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:gravity="center_horizontal"
+        android:layout_marginBottom="30dp">
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/power"
+            android:text="000"
+            android:textSize="42sp"
+            android:textColor="@color/white"
+            android:fontFamily="sans-serif-thin" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/power_label"
+            android:text="W"
+            android:textSize="28sp"
+            android:textColor="@color/text"
+            android:layout_marginLeft="10dp"
+            android:fontFamily="sans-serif-thin" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:gravity="center_horizontal"
+        android:layout_marginBottom="40dp">
+        <View
+            android:layout_width="100dp"
+            android:layout_height="1dp"
+            android:background="@color/text"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="20dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:textAlignment="center"
+            android:layout_height="wrap_content"
+            android:text="DISPLAY"
+            android:fontFamily="sans-serif-thin"
+            android:textSize="18sp"
+            android:textColor="@color/text" />
+
+        <View
+            android:layout_width="100dp"
+            android:layout_height="1dp"
+            android:background="@color/text"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="20dp"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:gravity="center_horizontal"
+        android:layout_marginBottom="20dp">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:paddingLeft="14dp"
+            android:paddingRight="14dp"
+            android:elevation="0dp"
+            android:background="@color/on"
+            android:id="@+id/displayON"
+            android:text="ON"
+            android:fontFamily="sans-serif-thin"
+            android:layout_marginRight="20dp"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:paddingLeft="14dp"
+            android:paddingRight="14dp"
+            android:elevation="0dp"
+            android:background="@color/off"
+            android:id="@+id/displayOFF"
+            android:text="OFF"
+            android:fontFamily="sans-serif-thin"/>
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:gravity="center_horizontal"
+        android:layout_marginBottom="20dp">
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="36dp"
+        android:paddingLeft="14dp"
+        android:paddingRight="14dp"
+        android:elevation="0dp"
+        android:background="@color/on"
+        android:id="@+id/segmentON"
+        android:text="Segment on"
+        android:fontFamily="sans-serif-thin"
+        android:layout_marginRight="20dp"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="36dp"
+        android:paddingLeft="14dp"
+        android:paddingRight="14dp"
+        android:elevation="0dp"
+        android:background="@color/off"
+        android:id="@+id/segmentOFF"
+        android:text="segment off"
+        android:fontFamily="sans-serif-thin"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:gravity="center_horizontal"
+        android:layout_marginBottom="20dp"
+        android:orientation="vertical">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:paddingLeft="14dp"
+            android:paddingRight="14dp"
+            android:elevation="0dp"
+            android:background="@color/choice"
+            android:id="@+id/setTemperature"
+            android:text="set Temperature"
+            android:fontFamily="sans-serif-thin"
+            android:layout_marginBottom="20dp"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:paddingLeft="14dp"
+            android:paddingRight="14dp"
+            android:elevation="3dp"
+            android:background="@color/choice"
+            android:id="@+id/setPower"
+            android:text="Set POWER"
+            android:fontFamily="sans-serif-thin"
+            android:layout_marginBottom="40dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:gravity="center_horizontal">
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:paddingLeft="14dp"
+                android:paddingRight="14dp"
+                android:background="@color/text"
+                android:id="@+id/settings"
+                android:text="Settings"
+                android:fontFamily="sans-serif-thin"/>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:paddingLeft="14dp"
+                android:paddingRight="14dp"
+                android:background="@color/text"
+                android:id="@+id/retry"
+                android:text="Retry"
+                android:fontFamily="sans-serif-thin"
+                android:layout_marginLeft="30dp"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+</LinearLayout>
